@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="RadioArchive.VerticalMenuControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RadioArchive"
+             mc:Ignorable="d">
+    <ItemsControl d:DataContext="{x:Static local:MenuDesignModel.Instance}"
+                  ItemsSource="{Binding Items}"
+                  Background="{StaticResource MediaControlBackgroundBrush}">
+        <!--Item template-->
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Grid Width="150">
+                    <!--Header-->
+                    <Grid Visibility="{Binding Type, Converter={local:MenuItemTypeVisibilityConverter}, ConverterParameter=Header}">
+
+                        <!--Header Line-->
+                        <Border Height="0.8" Background="{StaticResource ForeGroundDarkBrush}"/>
+
+                        <!--HeaderText-->
+                        <TextBlock Text="{Binding Text}"
+                                   FontFamily="{StaticResource PTSansCaptionBold}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Padding="0 5 10 5"
+                                   Margin="5,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   Foreground="{StaticResource ForeGroundLightBrush}"/>
+                    </Grid>
+
+                    <!--Menu item-->
+                    <Border Visibility="{Binding Type, Converter={local:MenuItemTypeVisibilityConverter}, ConverterParameter=TextAndIcon}"
+                            Background="{StaticResource MediaControlBackgroundBrush}"                            
+                            Padding="10">
+
+                        <Border.Triggers>
+                            <!--Hover in on mouse enter-->
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Duration="0:0:0" 
+                                                        To="{StaticResource ForeGroundMain}" 
+                                                        Storyboard.TargetProperty="Background.Color"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <!--Hover out on mouse enter-->
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Duration="0:0:0" 
+                                                        To="Transparent" 
+                                                        Storyboard.TargetProperty="Background.Color"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
+                        <!--Grid contains text and icon-->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <!--Icon-->
+                                <ColumnDefinition Width="Auto"/>
+                                <!--text-->
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" Command="{Binding SelectCommand}"/>
+                            </Grid.InputBindings>
+
+                            <!--Icon-->
+                            <TextBlock x:Name="Icon"
+                                       Padding="5"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource FontAwesome}"
+                                       Text="{Binding Icon, Converter={local:IconTypetoFontAwsomeConverter}}"
+                                       Foreground="{StaticResource ForeGroundLightBrush}"/>
+
+                            <!--Text-->
+                            <TextBlock x:Name="Text" 
+                                       Grid.Column="1" 
+                                       Text="{Binding Text}"
+                                       Margin="5 0 5 0"
+                                       FontFamily="{StaticResource PTSansCaptionReguler}"
+                                       Foreground="{StaticResource ForeGroundLightBrush}"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

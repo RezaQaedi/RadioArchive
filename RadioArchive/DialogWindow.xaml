@@ -1,0 +1,123 @@
+﻿<Window x:Class="RadioArchive.DialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RadioArchive"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        WindowStyle="None">
+    <Window.Resources>
+        <Style TargetType="{x:Type local:DialogWindow}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Window">
+                        <!--Outer border with drop shadow margin-->
+                        <Border Padding="10">
+                            <!--main window outline-->
+                            <Grid>
+                                <!-- Outer dragging border -->
+                                <Border BorderThickness="{Binding BeingMoved, Converter={local:BooleanToBorderThicknessConverter}}"
+                                        Panel.ZIndex="2"
+                                        CornerRadius="{Binding WindowCornerRadius, FallbackValue=10}"
+                                        BorderBrush="{StaticResource WordBlueBrush}"/>
+
+                                <!--opacity mask for corner grid-->
+                                <Border x:Name="Contanir" Background="{StaticResource BackGroundLightBrush}" CornerRadius="{Binding WindowCornerRadius, FallbackValue=10}"/>
+
+                                <!--main window with resizable outline margin-->
+                                <Border CornerRadius="{Binding WindowCornerRadius, FallbackValue=10}">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{StaticResource BackgroundDark}" Offset="0.0"/>
+                                            <GradientStop Color="{StaticResource BackgroundLight}" Offset="2"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="1" Opacity="0.4"/>
+                                    </Border.Effect>
+                                </Border>
+
+                                <!--the main window content-->
+                                <Grid>
+                                    <Grid.RowDefinitions>
+
+                                        <!--title bar-->
+                                        <RowDefinition Height="{Binding TitleHeight, FallbackValue=30}"/>
+
+                                        <!--window content-->
+                                        <RowDefinition Height="*"/>
+
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Title bar border -->
+                                    <Border BorderThickness="0 0 0 1" 
+                                            BorderBrush="{StaticResource BackgroundLightBrush}"
+                                            Grid.Row="0" 
+                                            Panel.ZIndex="1">
+
+                                        <!--title bar-->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <!--icon-->
+                                                <ColumnDefinition Width="Auto"/>
+                                                <!--title-->
+                                                <ColumnDefinition Width="*"/>
+                                                <!--window Button-->
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!--icon-->
+                                            <Button Style="{StaticResource SystemIconButton}" 
+                                                    Command="{Binding MenuCommand}"
+                                                    Margin="4"/>
+
+                                            <!--title-->
+                                            <TextBlock Margin="5,0,5,0"
+                                                        Grid.Column="1"
+                                                        Text="{Binding Title}" 
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"/>
+
+                                            <!-- Window Button -->
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal">      
+
+
+                                                <!-- Dialog close button -->
+                                                <Button Command="{Binding CloseCommand}" 
+                                                        Style="{StaticResource WindowCloseButton}" 
+                                                        Content="{StaticResource FontAweosomeCloseIcon}"
+                                                        FontSize="{StaticResource FontSizeHuge}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!--page content-->
+                                    <Border Grid.Row="1" ClipToBounds="True">
+                                        <ContentPresenter Content="{TemplateBinding Content}"/>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="{Binding  ResizeBorderThickness}" 
+                      CaptionHeight="{Binding TitleHeight}"
+                      GlassFrameThickness="0"
+                      CornerRadius="0">
+        </WindowChrome>
+    </WindowChrome.WindowChrome>
+
+    <Border Padding="10">
+        <ContentControl Content="{Binding Content}"/>
+    </Border>
+</Window>

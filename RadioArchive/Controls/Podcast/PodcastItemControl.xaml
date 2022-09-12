@@ -1,0 +1,110 @@
+﻿<UserControl x:Class="RadioArchive.PodcastItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RadioArchive"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             mc:Ignorable="d"         
+             d:DesignHeight="180" 
+             d:DesignWidth="160"
+             Height="180"
+             Width="160">
+    <UserControl.Resources>
+        <Style x:Key="ContentStyle" TargetType="{x:Type ContentControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                        <Grid Margin="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="160"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <!-- Show Item -->
+                            <Border>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                        <GradientStop Color="{Binding BackgroundColorLighter, FallbackValue={StaticResource WordOrange}}" Offset="0.0"/>
+                                        <GradientStop Color="{Binding BackgroundColor, FallbackValue={StaticResource WordRed}}" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Grid>
+                                    <Grid.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding SelectCommand}"/>
+                                    </Grid.InputBindings>
+
+                                    <!-- Is playing indicator -->
+                                    <TextBlock Text="{StaticResource FontAweosomePlay}"
+                                               Style="{StaticResource FadingText}"
+                                               Visibility="{Binding IsPlaying, Converter={local:BooleanToVisibilityGoneConverter}}"
+                                               Margin="18"
+                                               VerticalAlignment="Top"
+                                               HorizontalAlignment="Left"/>
+
+                                    <!-- Is new indicator -->
+                                    <TextBlock Text="{StaticResource FontAweosomeExclamation}"
+                                               Visibility="{Binding IsNew, Converter={local:BooleanToVisibilityGoneConverter}}"
+                                               Style="{StaticResource FadingText}"
+                                               Margin="18"
+                                               VerticalAlignment="Top"
+                                               HorizontalAlignment="Right"/>
+
+                                    <!-- Background icon -->
+                                    <TextBlock Text="{StaticResource FontAweosomePodcast}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="{StaticResource FontSizeLarg}"
+                                               FontFamily="{StaticResource FontAwesomeSolid}"/>
+
+                                    <Border Background="{StaticResource BackgroundLightBrush}"
+                                        Opacity="0">
+                                        <Border.Triggers>
+                                            <!--Hover in on mouse enter-->
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard Storyboard.TargetProperty="Opacity">
+                                                        <DoubleAnimation To="0.5"  Duration="00:00:00"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <!--Hover out on mouse enter-->
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard Storyboard.TargetProperty="Opacity">
+                                                        <DoubleAnimation To="0"  Duration="00:00:00"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <!-- Date text -->
+                                    <TextBlock Grid.ColumnSpan="2"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,0,3,6"
+                                               VerticalAlignment="Bottom"
+                                               Foreground="{StaticResource BackgroundDarkBrush}"
+                                               FontSize="{StaticResource FontSizeSmaller}"
+                                               Text="{Binding Date, Converter={local:TimeToDisplayTimeConverter}}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Title -->
+                            <StackPanel Grid.Row="1">
+                                <TextBlock Text="{Binding DisplayTitle}"
+                                           Margin="6,0,0,0"
+                                           FontSize="{StaticResource FontSizeSmaller}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+
+    <ContentControl d:DataContext="{x:Static local:PodcastItemDesignModel.Instance}"
+                Style="{StaticResource ContentStyle}"/>
+</UserControl>

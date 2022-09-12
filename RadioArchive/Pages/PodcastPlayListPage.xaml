@@ -1,0 +1,105 @@
+﻿<local:BasePage x:TypeArguments="local:PodcastPlayListViewModel" x:Class="RadioArchive.PodcastPlayListPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RadioArchive" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type local:PodcastPlayListPage}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="UserControl">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+
+                                <!-- Title -->
+                                <TextBlock Text="{Binding DisplayTitle}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Padding="0,0,20,0"
+                                               Grid.Row="0"
+                                               FontSize="{StaticResource FontSizeLarg}"/>
+
+                                <!-- Back Button -->
+                                <Button FontSize="{StaticResource FontSizeLarg}"
+                                            Style="{StaticResource IconGrowButton}"
+                                            FontFamily="{StaticResource FontAwesomeSolid}"
+                                            Command="{Binding BackCommand}"
+                                            Padding="0"
+                                            Margin="15,0,0,0"
+                                            Width="50"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left"
+                                            Content="{StaticResource FontAweosomeArrowAltCircleLeft}"/>
+                            </Grid>
+
+                            <!-- Content -->
+                            <ContentPresenter Grid.Row="1" Content="{TemplateBinding Content}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Retry loading -->
+        <StackPanel HorizontalAlignment="Center"
+                        Visibility="{Binding FaildToLoad, Converter={local:BooleanToVisibilityGoneConverter}}"
+                        VerticalAlignment="Center">
+            <Button Content="{StaticResource FontAweosomeRedo}"
+                        Command="{Binding RetryCommand}"
+                        ToolTip="Retry"
+                        Width="60"
+                        Padding="0"
+                        Style="{StaticResource IconGrowButton}"/>
+
+            <TextBlock Text="Something went wrong.."  
+                           Margin="0,15,0,0"
+                           Foreground="{StaticResource ForegroundSubtitleBrush}"
+                           FontSize="{StaticResource FontSizeSmall}"/>
+
+        </StackPanel>
+
+        <!-- Content -->
+        <Grid Visibility="{Binding FaildToLoad, Converter={local:BooleanToVisibilityGoneConverter}, ConverterParameter=true}">
+            <!-- Loding indicator -->
+            <TextBlock VerticalAlignment="Center"                   
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsLoading, Converter={local:BooleanToVisibilityGoneConverter}}"
+                    Style="{StaticResource SpinningText}"/>
+
+            <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Visibility="{Binding EmptyList, Converter={local:BooleanToVisibilityGoneConverter}}">
+                
+                  <Run Text="Nothing yet "/>
+                  <Run Text="{StaticResource FontAweosomeHeartBroken}"
+                       FontFamily="{StaticResource FontAwesomeSolid}"/>
+                  <LineBreak/>
+                  <Run Text="Now keep looking..." 
+                       Foreground="{StaticResource ForegroundSubtitleBrush}"/>
+            </TextBlock>
+
+            <Grid Margin="10,0,0,0"
+                  local:AnimateFadeInProperty.Value="{Binding IsLoading, Converter={local:InverseBooleanConverter}}">
+
+                <!-- Items -->
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                                VerticalScrollBarVisibility="Auto">
+                    <local:PodcastListControl Grid.Row="0"                                          
+                                          DataContext="{Binding Items}"/>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</local:BasePage>

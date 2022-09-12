@@ -1,0 +1,261 @@
+﻿<UserControl x:Class="RadioArchive.PodcastControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RadioArchive"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d"
+             d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <Style x:Key="ContentStyle" TargetType="{x:Type ContentControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                        <Border CornerRadius="5"
+                                Background="#303136">
+                            <!-- Media details -->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition MinHeight="85"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Working layer -->
+                                <Border Grid.RowSpan="2"
+                                        Background="Transparent"
+                                        local:AnimateFadeInProperty.Value="{Binding Working}"
+                                        Panel.ZIndex="3">
+                                    <TextBlock Style="{StaticResource SpinningText}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Show Options and details -->
+                                <Border Grid.Row="0" 
+                                        CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- User Proggresion -->
+                                        <ProgressBar Opacity="0.2"
+                                             Grid.ColumnSpan="2"
+                                             BorderThickness="0"
+                                             Maximum="100"
+                                             Background="Transparent"
+                                             Foreground="{StaticResource ForeGroundVeryDarkBrush}"
+                                             Value="{Binding Proggress}"/>
+
+                                        <!-- Like button -->
+                                        <Button Content="{StaticResource FontAweosomeHeart}"
+                                                Style="{StaticResource IconGrowButton}"
+                                                Margin="5"
+                                                Command="{Binding LikeCommand}"
+                                                Opacity="{Binding IsLiked, Converter={local:BooleanToOpacityConverter}}"
+                                                ToolTip="Like"
+                                                Grid.Column="1"
+                                                Panel.ZIndex="1"
+                                                Width="45"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+
+                                        <!-- Optional buttons -->
+                                        <Grid Grid.ColumnSpan="2"
+                                              Panel.ZIndex="1"
+                                              Opacity="0"                                              
+                                              x:Name="OpetionsContainer">
+
+                                            <!-- Notes Show button -->
+                                            <Button Content="{StaticResource FontAweosomeAngelDown}"
+                                                    Style="{StaticResource IconGrowButton}"
+                                                    Visibility="{Binding NotesVisible, Converter={local:BooleanToVisibilityGoneConverter}, ConverterParameter=true}"
+                                                    Command="{Binding ToggleNotes}"
+                                                    ToolTip="Show notes"
+                                                        VerticalAlignment="Bottom"
+                                                        HorizontalAlignment="Center"
+                                                    Width="30">
+                                            </Button>
+
+                                            <!-- Hide button -->
+                                            <Button Content="{StaticResource FontAweosomeAngelUp}"
+                                                    Style="{StaticResource IconGrowButton}"
+                                                    Visibility="{Binding NotesVisible, Converter={local:BooleanToVisibilityGoneConverter}}"
+                                                    Command="{Binding ToggleNotes}"
+                                                    ToolTip="Hide Notes"
+                                                    Width="30"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Bottom"/>
+
+                                            <Label DataContext="{Binding Notes}"
+                                                   Visibility="{Binding NoteEmpty, Converter={local:BooleanToVisibilityGoneConverter}, ConverterParameter=true}"
+                                                   Content="{Binding Items, Converter={local:CollectionToCollectionCountConverter}}"
+                                                   Opacity="0.5"
+                                                   ToolTip="Notes"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Bottom"/>
+
+                                            <!--Menu Continer-->
+                                            <Border Grid.Column="1"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Top"
+                                                    Background="Transparent"
+                                                    Margin="0,10,5,0">
+
+                                                <!--More menu-->
+                                                <Menu ItemsSource="{Binding UserCreatedPlatlistMenu}"
+                                                      Width="20"
+                                                      Background="Transparent"
+                                                      Height="20"
+                                                      Panel.ZIndex="2">
+                                                    <Menu.ItemContainerStyle>
+                                                        <Style TargetType="{x:Type MenuItem}">
+                                                            <Setter Property="Command" Value="{Binding Command}"/>
+                                                            <Setter Property="IsSubmenuOpen" Value="{Binding IsSubMenuOpen, Mode=OneWayToSource}"/>
+                                                            <Setter Property="local:IocnTextProperty.Value" Value="{Binding Icon}"/>
+                                                            <Setter Property="Icon" Value=""/>
+                                                        </Style>
+                                                    </Menu.ItemContainerStyle>
+                                                    <Menu.ItemTemplate>
+                                                        <HierarchicalDataTemplate DataType="{x:Type local:WpfMenuItemViewModel}"
+                                                                  ItemsSource="{Binding Path=MenuItems}">
+                                                            <TextBlock Text="{Binding Header}"/>
+                                                        </HierarchicalDataTemplate>
+                                                    </Menu.ItemTemplate>
+                                                </Menu>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Icon Container -->
+                                        <Border Grid.Column="0"
+                                                CornerRadius="5"
+                                                Width="80"
+                                                Margin="3">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                                    <GradientStop Color="{Binding BackgroundColorLighter, FallbackValue={StaticResource WordOrange}}" Offset="0.0"/>
+                                                    <GradientStop Color="{Binding BackgroundColor, FallbackValue={StaticResource WordRed}}" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+
+                                            <Grid>
+                                                <!-- Is Replay indicator -->
+                                                <TextBlock Text="R"
+                                                           Visibility="{Binding IsReplay, Converter={local:BooleanToVisibilityGoneConverter}}"
+                                                           FontSize="{StaticResource FontSizeRegular}"
+                                                           Foreground="{StaticResource WordBlueBrush}"
+                                                           ToolTip="This show is replay of another"
+                                                           Margin="2"
+                                                           HorizontalAlignment="Left"
+                                                           VerticalAlignment="Top">
+                                                </TextBlock>
+
+                                                <!-- Play Button -->
+                                                <Button Content="{Binding IsPlaying, Converter={local:IsPlayingToFontawsomeConverter}}"
+                                                                Command="{Binding TogglePlayCommand}"
+                                                                Width="50"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Center"
+                                                                Style="{StaticResource IconGrowButton}"/>
+
+                                                <!-- Icon -->
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}"
+                                                           Text="{Binding Time, Converter={local:PodcastTimeToFontAwsomeConverter}}"
+                                                           FontSize="{StaticResource FontSizeSmaller}"
+                                                           Margin="2"
+                                                           ToolTip="{Binding Time, Converter={local:PodcastTimeToToolTipTextConverter}}"
+                                                           HorizontalAlignment="Left"
+                                                           VerticalAlignment="Bottom"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Details -->
+                                        <StackPanel Margin="10" 
+                                            Grid.Column="1">
+                                            <TextBlock Text="{Binding DisplayTitle}"
+                                               Margin="0,0,0,5"/>
+                                            <TextBlock Text="{Binding Date, Converter={local:TimeToDisplayTimeConverter}}"
+                                               Margin="2,0,0,0"
+                                                    FontSize="{StaticResource FontSizeSmall}"
+                                                    Foreground="{StaticResource ForegroundSubtitleBrush}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+
+                                <!--Header Container -->
+                                <Border Grid.Row="1" 
+                                        Background="#3c3d44"
+                                        Margin="2.5"
+                                        CornerRadius="5"
+                                        Visibility="{Binding NotesVisible, Converter={local:BooleanToVisibilityGoneConverter}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Header -->
+                                        <TextBlock Text="Note's :" 
+                                                   VerticalAlignment="Center"
+                                                   Margin="10"
+                                                   FontSize="{StaticResource FontSizeHeader}"/>
+
+                                        <!-- Input -->
+                                        <TextBox Grid.Column="1" 
+                                                 VerticalAlignment="Center"
+                                                 MaxLength="300"
+                                                 Tag="add a new note..."
+                                                 Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}"
+                                                 Margin="15,0,15,0"
+                                                 Style="{StaticResource TranspanetTexBox}">
+
+                                            <TextBox.InputBindings>
+                                                <KeyBinding Command="{Binding SaveInputCommand}" Key="Enter" />
+                                            </TextBox.InputBindings>
+                                        </TextBox>
+
+                                        <!-- Note list -->
+                                        <local:PodcastNoteListControl Grid.Row="1" 
+                                                                      Grid.Column="1" 
+                                                                      Margin="10"
+                                                                      DataContext="{Binding Notes}"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <!-- More menu tiggers -->
+                                    <BeginStoryboard>
+                                        <Storyboard Storyboard.TargetName="OpetionsContainer" Storyboard.TargetProperty="Opacity">
+                                            <DoubleAnimation Duration="0:0:0" To="1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard Storyboard.TargetName="OpetionsContainer" Storyboard.TargetProperty="Opacity">
+                                            <DoubleAnimation Duration="0:0:0" To="0"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+
+    <ContentControl d:DataContext="{x:Static local:PodcastDesignModel.Instance}" 
+                    Style="{StaticResource ContentStyle}"/>
+</UserControl>
